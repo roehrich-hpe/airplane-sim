@@ -3,4 +3,14 @@ layout:
 - go.kubebuilder.io/v3
 projectName: airplane-sim
 repo: github.com/roehrich-hpe/airplane-sim
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: github.com
+  group: play
+  kind: Rudder
+  path: github.com/roehrich-hpe/airplane-sim/api/v1alpha1
+  version: v1alpha1
 version: "3"

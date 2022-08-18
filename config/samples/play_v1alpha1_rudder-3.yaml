@@ -1,0 +1,14 @@
+apiVersion: play.github.com/v1alpha1
+kind: Rudder
+metadata:
+  name: rudder-nil
+spec:
+  # This spec is nil, so the kubebuilder:default on RudderSpec.Position will
+  # not execute.
+  # When we write our code for controllers/rudder_controller.go we'll have to
+  # allow for an empty spec with no defaults filled in.  That seems wrong.
+  # We can edit "type Rudder struct" in api/v1alpha1/rudder_types.go to
+  # remove the "omitempty" from the "Spec RudderSpec" field.  That will make
+  # this nil spec invalid and the code in rudder_controller.go can be cleaner.
+
+

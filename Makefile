@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= controller:1.0
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.24.2
 
@@ -75,6 +75,9 @@ docker-build: test ## Build docker image with the manager.
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
+
+kind-push: ## Push docker image to kind.
+	kind load docker-image ${IMG}
 
 ##@ Deployment
 

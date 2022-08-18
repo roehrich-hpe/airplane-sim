@@ -1,6 +1,11 @@
 apiVersion: play.github.com/v1alpha1
 kind: Rudder
 metadata:
-  name: rudder-sample
-spec:
-  # TODO(user): Add fields here
+  name: rudder-empty
+spec: {}
+  # This spec is empty, but because of the empty body of {} this is not nil,
+  # so the kubebuilder:default on RudderSpec.Position will execute.
+  # When we write our code for controllers/rudder_controller.go we'll know
+  # that the defaults will be filled in and we won't have to code for an
+  # empty spec.
+

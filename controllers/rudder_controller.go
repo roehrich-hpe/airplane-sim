@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -47,9 +48,30 @@ type RudderReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.2/pkg/reconcile
 func (r *RudderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	// Try this with and without the WithName().  See how this affects
+	// readability of the logs when we add more controllers.
+	log := log.FromContext(ctx).WithName("rudder")
+
+	rudder := &playv1alpha1.Rudder{}
+	if err := r.Get(ctx, req.NamespacedName, rudder); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	if rudder.Status.Position != rudder.Spec.Position {
+		log.Info("Resetting position")
+		rudder.Status.Position = rudder.Spec.Position
+		if err := r.Status().Update(ctx, rudder); err != nil {
+			if apierrors.IsConflict(err) {
+				// You may decide to not log these.  They can
+				// be very common.
+				log.Info("Conflict while setting position")
+				return ctrl.Result{Requeue: true}, nil
+			}
+			log.Error(err, "Error while setting position")
+			return ctrl.Result{}, err
+		}
+	}
 
 	return ctrl.Result{}, nil
 }

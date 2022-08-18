@@ -1,0 +1,6 @@
+apiVersion: play.github.com/v1alpha1
+kind: Rudder
+metadata:
+  name: rudder-to-left
+spec:
+  position: left

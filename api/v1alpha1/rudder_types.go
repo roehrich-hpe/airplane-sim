@@ -25,17 +25,18 @@ import (
 
 // RudderSpec defines the desired state of Rudder
 type RudderSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of Rudder. Edit rudder_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Position indicates where we want the rudder to be placed
+	// +kubebuilder:validation:Enum=neutral;left;right
+	// +kubebuilder:default:=neutral
+	Position string `json:"position,omitempty"`
 }
 
 // RudderStatus defines the observed state of Rudder
 type RudderStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Position indicates where the rudder is currently
+	// +kubebuilder:validation:Enum=neutral;left;right
+	// +kubebuilder:default:=neutral
+	Position string `json:"position,omitempty"`
 }
 
 //+kubebuilder:object:root=true

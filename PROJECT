@@ -1,0 +1,6 @@
+domain: github.com
+layout:
+- go.kubebuilder.io/v3
+projectName: airplane-sim
+repo: github.com/roehrich-hpe/airplane-sim
+version: "3"

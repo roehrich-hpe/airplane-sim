@@ -1,0 +1,6 @@
+apiVersion: play.github.com/v1alpha1
+kind: Pedals
+metadata:
+  name: pedals-sample
+spec:
+  # TODO(user): Add fields here

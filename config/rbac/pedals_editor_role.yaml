@@ -1,0 +1,24 @@
+# permissions for end users to edit pedals.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pedals-editor-role
+rules:
+- apiGroups:
+  - play.github.com
+  resources:
+  - pedals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - play.github.com
+  resources:
+  - pedals/status
+  verbs:
+  - get

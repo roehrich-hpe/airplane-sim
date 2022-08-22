@@ -21,4 +21,9 @@ resources:
   kind: Pedals
   path: github.com/roehrich-hpe/airplane-sim/api/v1alpha1
   version: v1alpha1
+- controller: true
+  domain: github.com
+  group: play
+  kind: PedalLinkage
+  version: v1alpha1
 version: "3"

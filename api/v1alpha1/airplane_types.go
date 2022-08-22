@@ -17,36 +17,37 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // AirplaneSpec defines the desired state of Airplane
 type AirplaneSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of Airplane. Edit airplane_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// TailNumber is "N-number" registration on our tail. We support only: Nxxxxx, where X is a digit or an uppercase letter.
+	// +kubebuilder:validation:Pattern:="^N[A-Z\\d]{5}$"
+	TailNumber string `json:"tailNumber"`
 }
 
 // AirplaneStatus defines the observed state of Airplane
 type AirplaneStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Rudder names the rudder resource
+	Rudder corev1.ObjectReference `json:"rudder,omitempty"`
+
+	// Pedals names the pedals resource
+	Pedals corev1.ObjectReference `json:"pedals,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="TAILNUMBER",type="string",JSONPath=".spec.tailNumber",description="N-Number registration"
+//+kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 
 // Airplane is the Schema for the airplanes API
 type Airplane struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   AirplaneSpec   `json:"spec,omitempty"`
+	Spec   AirplaneSpec   `json:"spec"`
 	Status AirplaneStatus `json:"status,omitempty"`
 }
 

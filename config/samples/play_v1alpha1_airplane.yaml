@@ -1,6 +1,6 @@
 apiVersion: play.github.com/v1alpha1
 kind: Airplane
 metadata:
-  name: airplane-sample
+  name: cessna152
 spec:
-  # TODO(user): Add fields here
+  tailNumber: N238CS

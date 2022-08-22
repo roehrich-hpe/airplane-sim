@@ -35,11 +35,14 @@ var _ = Describe("PedalLinkage Unit Tests", func() {
 	var (
 		key    types.NamespacedName
 		pedals *playv1alpha1.Pedals
+
+		rudder *playv1alpha1.Rudder
 	)
 
 	BeforeEach(func() {
+		// Peddles and rudder have the same value for the name.
 		key = types.NamespacedName{
-			Name:      "pedals-" + uuid.New().String()[0:8],
+			Name:      uuid.New().String()[0:8],
 			Namespace: corev1.NamespaceDefault,
 		}
 
@@ -54,6 +57,18 @@ var _ = Describe("PedalLinkage Unit Tests", func() {
 		}
 
 		Expect(k8sClient.Create(context.TODO(), pedals)).To(Succeed())
+
+		rudder = &playv1alpha1.Rudder{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      key.Name,
+				Namespace: key.Namespace,
+			},
+			Spec: playv1alpha1.RudderSpec{
+				//Position: "neutral",
+			},
+		}
+
+		Expect(k8sClient.Create(context.TODO(), rudder)).To(Succeed())
 	})
 
 	AfterEach(func() {
@@ -70,6 +85,11 @@ var _ = Describe("PedalLinkage Unit Tests", func() {
 		Eventually(func(g Gomega) {
 			g.Expect(k8sClient.Get(context.TODO(), key, pedals)).To(Succeed())
 			g.Expect(pedals.Status.LinkagePosition).To(Equal("neutral"))
+		}).Should(Succeed())
+
+		Eventually(func(g Gomega) {
+			g.Expect(k8sClient.Get(context.TODO(), key, rudder)).To(Succeed())
+			g.Expect(rudder.Status.Position).To(Equal("neutral"))
 		}).Should(Succeed())
 	})
 
@@ -91,16 +111,25 @@ var _ = Describe("PedalLinkage Unit Tests", func() {
 
 		}
 
+		By("moving the peddles")
 		Eventually(func(g Gomega) {
 			g.Expect(k8sClient.Get(context.TODO(), key, pedals)).To(Succeed())
 			pedals.Spec.Pressed = wanted
 			g.Expect(k8sClient.Update(context.TODO(), pedals)).To(Succeed())
 		}).Should(Succeed())
 
+		By("watching the linkage move")
 		expected := &playv1alpha1.Pedals{}
 		Eventually(func(g Gomega) {
 			g.Expect(k8sClient.Get(context.TODO(), key, expected)).To(Succeed())
 			g.Expect(expected.Status.LinkagePosition).To(Equal(linkageWanted))
+		}).Should(Succeed())
+
+		By("checking that the rudder moved")
+		rudderExpected := &playv1alpha1.Rudder{}
+		Eventually(func(g Gomega) {
+			g.Expect(k8sClient.Get(context.TODO(), key, rudderExpected)).To(Succeed())
+			g.Expect(rudderExpected.Status.Position).To(Equal(linkageWanted))
 		}).Should(Succeed())
 	})
 })

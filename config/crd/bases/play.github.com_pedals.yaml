@@ -17,7 +17,7 @@ spec:
   versions:
   - additionalPrinterColumns:
     - description: Indicates which pedal is pressed
-      jsonPath: .state.pressed
+      jsonPath: .spec.pressed
       name: PRESSED
       type: string
     - jsonPath: .metadata.creationTimestamp

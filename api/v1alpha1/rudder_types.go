@@ -41,13 +41,16 @@ type RudderStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="DESIRED POSITION",type="string",JSONPath=".spec.position",description="Desired position of rudder"
+//+kubebuilder:printcolumn:name="CURRENT POSITION",type="string",JSONPath=".status.position",description="Current position of rudder"
+//+kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 
 // Rudder is the Schema for the rudders API
 type Rudder struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   RudderSpec   `json:"spec,omitempty"`
+	Spec   RudderSpec   `json:"spec"`
 	Status RudderStatus `json:"status,omitempty"`
 }
 

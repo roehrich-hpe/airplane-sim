@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"time"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -80,6 +81,27 @@ func (r *PedalLinkageReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		}
 	}
 
+	// Get the rudder, move it if necessary.
+	rudder := &playv1alpha1.Rudder{}
+	// Rudder and Pedals have the same name.
+	rudderKey := req.NamespacedName
+	if err := r.Get(ctx, rudderKey, rudder); err != nil {
+		log.Error(err, "Did not find rudder")
+		return ctrl.Result{RequeueAfter: time.Second * 10}, nil
+	}
+
+	if rudder.Spec.Position != pedals.Status.LinkagePosition {
+		rudder.Spec.Position = pedals.Status.LinkagePosition
+		if err := r.Update(ctx, rudder); err != nil {
+			if apierrors.IsConflict(err) {
+				log.Info("Conflict on rudder")
+				return ctrl.Result{Requeue: true}, nil
+			}
+			log.Error(err, "Error on rudder")
+			return ctrl.Result{}, err
+		}
+		log.Info("rudder has been set")
+	}
 	return ctrl.Result{}, nil
 }
 

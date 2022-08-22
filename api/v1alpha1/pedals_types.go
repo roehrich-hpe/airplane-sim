@@ -38,7 +38,7 @@ type PedalsStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:printcolumn:name="PRESSED",type="string",JSONPath=".state.pressed",description="Indicates which pedal is pressed"
+//+kubebuilder:printcolumn:name="PRESSED",type="string",JSONPath=".spec.pressed",description="Indicates which pedal is pressed"
 //+kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 
 // Pedals is the Schema for the pedals API

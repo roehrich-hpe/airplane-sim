@@ -52,6 +52,7 @@ func (r *RudderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	// Try this with and without the WithName().  See how this affects
 	// readability of the logs when we add more controllers.
 	log := log.FromContext(ctx).WithName("rudder")
+	//log := log.FromContext(ctx)
 
 	rudder := &playv1alpha1.Rudder{}
 	if err := r.Get(ctx, req.NamespacedName, rudder); err != nil {

@@ -1,0 +1,74 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.9.2
+  creationTimestamp: null
+  name: pedals.play.github.com
+spec:
+  group: play.github.com
+  names:
+    kind: Pedals
+    listKind: PedalsList
+    plural: pedals
+    singular: pedals
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Indicates which pedal is pressed
+      jsonPath: .state.pressed
+      name: PRESSED
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Pedals is the Schema for the pedals API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: PedalsSpec defines the desired state of Pedals
+            properties:
+              pressed:
+                default: none
+                description: Pressed indicates which pedal is pressed
+                enum:
+                - none
+                - left
+                - right
+                type: string
+            type: object
+          status:
+            description: PedalsStatus defines the observed state of Pedals
+            properties:
+              linkagePosition:
+                default: neutral
+                description: LinkagePosition indicates where the pedal linkage is
+                  currently
+                enum:
+                - neutral
+                - left
+                - right
+                type: string
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

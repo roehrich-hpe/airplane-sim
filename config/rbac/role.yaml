@@ -8,6 +8,32 @@ rules:
 - apiGroups:
   - play.github.com
   resources:
+  - pedals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - play.github.com
+  resources:
+  - pedals/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - play.github.com
+  resources:
+  - pedals/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - play.github.com
+  resources:
   - rudders
   verbs:
   - create

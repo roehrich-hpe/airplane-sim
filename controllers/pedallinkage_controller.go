@@ -19,10 +19,13 @@ package controllers
 import (
 	"context"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	playv1alpha1 "github.com/roehrich-hpe/airplane-sim/api/v1alpha1"
 )
 
 // PedalLinkageReconciler reconciles a PedalLinkage object
@@ -31,9 +34,9 @@ type PedalLinkageReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=play.github.com,resources=pedallinkages,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=play.github.com,resources=pedallinkages/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=play.github.com,resources=pedallinkages/finalizers,verbs=update
+//+kubebuilder:rbac:groups=play.github.com,resources=pedals,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=play.github.com,resources=pedals/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=play.github.com,resources=pedals/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -45,9 +48,37 @@ type PedalLinkageReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.2/pkg/reconcile
 func (r *PedalLinkageReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	pedals := &playv1alpha1.Pedals{}
+	if err := r.Get(ctx, req.NamespacedName, pedals); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	var positionWanted string
+	switch pedals.Spec.Pressed {
+	case "none":
+		if pedals.Status.LinkagePosition != "neutral" {
+			positionWanted = "neutral"
+		}
+	default:
+		if pedals.Status.LinkagePosition != pedals.Spec.Pressed {
+			positionWanted = pedals.Spec.Pressed
+		}
+	}
+
+	if len(positionWanted) > 0 {
+		log.Info("Resetting position")
+		pedals.Status.LinkagePosition = positionWanted
+		if err := r.Status().Update(ctx, pedals); err != nil {
+			if apierrors.IsConflict(err) {
+				log.Info("Conflict while setting position")
+				return ctrl.Result{Requeue: true}, nil
+			}
+			log.Error(err, "Error while setting position")
+			return ctrl.Result{}, err
+		}
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -55,7 +86,6 @@ func (r *PedalLinkageReconciler) Reconcile(ctx context.Context, req ctrl.Request
 // SetupWithManager sets up the controller with the Manager.
 func (r *PedalLinkageReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		// Uncomment the following line adding a pointer to an instance of the controlled resource as an argument
-		// For().
+		For(&playv1alpha1.Pedals{}).
 		Complete(r)
 }

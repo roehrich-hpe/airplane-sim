@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 // Package v1alpha1 contains API Schema definitions for the play v1alpha1 API group
-//+kubebuilder:object:generate=true
-//+groupName=play.github.com
+// +kubebuilder:object:generate=true
+// +groupName=play.github.com
 package v1alpha1
 
 import (
